@@ -1,0 +1,35 @@
+name: Release
+
+on:
+  push:
+    tags:
+    - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Fetch repo
+        uses: actions/checkout@v2
+
+      - name: Install node
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build
+        run: npm run build
+
+      - name: Copy output
+        run: cp ${{ github.workspace }}/dist/mainsail.zip mainsail.zip
+
+      - name: Upload release
+        uses: ncipollo/release-action@v1
+        with:
+          generateReleaseNotes: true
+          artifacts: 'mainsail.zip'
+          token: ${{ secrets.GITHUB_TOKEN }}
